@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AccessPong.Service.Event;
+using System;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AccessPong.Service.Controllers
 {
@@ -9,7 +11,10 @@ namespace AccessPong.Service.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok("The Service is healthy and working properly.");
+            var tempTest = new TemporaryTest();
+            int result = tempTest.AddOne(0);
+            string endPointMessage = $"{result}: Health endpoint hit at {DateTime.UtcNow}";
+            return Ok(endPointMessage);
         }            
     }
 }
