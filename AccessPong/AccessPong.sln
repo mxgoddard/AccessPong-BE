@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccessPong.Tests", "..\Acce
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccessPong.Events", "..\AccessPong.Events\AccessPong.Events.csproj", "{0E33F29B-9D32-490B-8DE0-CB26D0750909}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccessPong.Data", "..\AccessPong.Data\AccessPong.Data.csproj", "{744D5D74-9C61-4EB7-B182-E6E355C067C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{0E33F29B-9D32-490B-8DE0-CB26D0750909}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E33F29B-9D32-490B-8DE0-CB26D0750909}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E33F29B-9D32-490B-8DE0-CB26D0750909}.Release|Any CPU.Build.0 = Release|Any CPU
+		{744D5D74-9C61-4EB7-B182-E6E355C067C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{744D5D74-9C61-4EB7-B182-E6E355C067C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{744D5D74-9C61-4EB7-B182-E6E355C067C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{744D5D74-9C61-4EB7-B182-E6E355C067C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
