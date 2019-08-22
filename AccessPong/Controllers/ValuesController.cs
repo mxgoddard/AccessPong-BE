@@ -6,40 +6,37 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AccessPong.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api")]
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        // GET api/values
+        // GET api/home
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public IActionResult GetApi()
         {
-            return new string[] { "value1", "value2" };
+            return Ok($"{DateTime.UtcNow}: This is the /api/ endpoint");
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        // GET api/home
+        [HttpGet("home")]
+        public IActionResult GetHome()
         {
-            return "value";
+            return Ok($"{DateTime.UtcNow}: This is the /api/home endpoint");
         }
 
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody] string value)
+        // GET api/league
+        [HttpGet("league")]
+        public IActionResult GetLeague()
         {
+            return Ok($"{DateTime.UtcNow}: This is the /api/league endpoint");
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        // GET api/fixtures
+        [HttpGet("fixtures")]
+        public IActionResult GetFixtures()
         {
+            return Ok($"{DateTime.UtcNow}: This is the /api/fixtures endpoint");
         }
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
 }
