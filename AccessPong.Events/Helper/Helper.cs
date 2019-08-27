@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using AccessPong.Events.Models;
+using LiteDB;
 
 namespace AccessPong.Events.Helper
 {
@@ -9,9 +11,14 @@ namespace AccessPong.Events.Helper
     {
         private List<string> nameList;
 
+        // Move to config file
+        private readonly string databaseFilename = "TEST-AccessPongDB";
+
         public bool GenerateFixtures()
         {
             /*
+            This won't be connected to any endpoints, only used for generating fixtures
+
              Purpose of this method is to create all the fixtures and persist in the database
              Will probably need to inject stuff for test mocking
              Return true on success, false on fail
@@ -29,6 +36,9 @@ namespace AccessPong.Events.Helper
                 // Create fixtures
                 Fixtures fixtureList = CreateFixtureList(playerList.players.Count);
                 if (fixtureList.fixtures.Count == 0) return false;
+
+                // Persist fixtures in database
+                if (!PersistFixtures(fixtureList, databaseFilename)) return false;
             }
             catch (Exception ex)
             {
@@ -37,6 +47,38 @@ namespace AccessPong.Events.Helper
             }
 
             return true;
+        }
+
+        // [!] This method will currently drop the whole tbl_fixtures table
+        public bool PersistFixtures(Fixtures fixtures, string databaseFilename)
+        {
+            try
+            {
+                string path = Directory.GetCurrentDirectory();
+                string dbFilePath = Path.GetFullPath(Path.Combine(path, $@"..\..\..\..\AccessPong.Data\Database\{databaseFilename}.db"));
+
+                // Open database or create if doesn't exist
+                using (var db = new LiteDatabase(dbFilePath))
+                {
+                    // Drop table
+                    db.DropCollection("tbl_fixtures");
+
+                    // Create fixtures table
+                    var col = db.GetCollection<Fixture>("tbl_fixtures");
+
+                    foreach (var fixture in fixtures.fixtures)
+                    {
+                        col.Insert(fixture);
+                    }
+
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
         }
 
         public Fixtures CreateFixtureList(int playerCount)
@@ -110,8 +152,6 @@ namespace AccessPong.Events.Helper
         {
             try
             {
-
-
                 Players playerList = new Players();
                 playerList.players = new List<Player>();
 
