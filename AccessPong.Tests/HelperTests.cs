@@ -33,7 +33,7 @@ namespace AccessPong.Tests
         }
 
         [Test]
-        public void CreateFixtures()
+        public void CreateFixtures_ThreePlayers()
         {
             // Arrange
             Fixtures expected = new Fixtures()
@@ -61,30 +61,86 @@ namespace AccessPong.Tests
                 }
             };
 
-            Players players = new Players()
+            // Act
+            Fixtures actual = _helper.CreateFixtureList(3);
+
+            // Assert
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void CreateFixtures_FivePlayers()
+        {
+            // Arrange
+            Fixtures expected = new Fixtures()
             {
-                players = new List<Player>()
+                fixtures = new List<Fixture>()
                 {
-                    new Player()
+                    new Fixture()
                     {
-                        PlayerId = 1,
-                        PlayerName = "Max",
+                        FixtureId = 1,
+                        PlayerOneId = 2,
+                        PlayerTwoId = 5,
                     },
-                    new Player()
+                    new Fixture()
                     {
-                        PlayerId = 2,
-                        PlayerName = "Stefano",
+                        FixtureId = 2,
+                        PlayerOneId = 3,
+                        PlayerTwoId = 4,
                     },
-                    new Player()
+                    new Fixture()
                     {
-                        PlayerId = 3,
-                        PlayerName = "Dave",
-                    }
+                        FixtureId = 3,
+                        PlayerOneId = 1,
+                        PlayerTwoId = 5,
+                    },
+                    new Fixture()
+                    {
+                        FixtureId = 4,
+                        PlayerOneId = 2,
+                        PlayerTwoId = 3,
+                    },
+                    new Fixture()
+                    {
+                        FixtureId = 5,
+                        PlayerOneId = 1,
+                        PlayerTwoId = 4,
+                    },
+                    new Fixture()
+                    {
+                        FixtureId = 6,
+                        PlayerOneId = 5,
+                        PlayerTwoId = 3,
+                    },
+                    new Fixture()
+                    {
+                        FixtureId = 7,
+                        PlayerOneId = 1,
+                        PlayerTwoId = 3,
+                    },
+                    new Fixture()
+                    {
+                        FixtureId = 8,
+                        PlayerOneId = 4,
+                        PlayerTwoId = 2,
+                    },
+                    new Fixture()
+                    {
+                        FixtureId = 9,
+                        PlayerOneId = 1,
+                        PlayerTwoId = 2,
+                    },
+                    new Fixture()
+                    {
+                        FixtureId = 10,
+                        PlayerOneId = 4,
+                        PlayerTwoId = 5,
+                    },
                 }
             };
 
             // Act
-            Fixtures actual = _helper.CreateFixtureList(players);
+            Fixtures actual = _helper.CreateFixtureList(5);
 
             // Assert
             actual.Should().BeEquivalentTo(expected);
