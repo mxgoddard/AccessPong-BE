@@ -24,11 +24,11 @@ namespace AccessPong.Events.Helper
 
                 // Create player list
                 Players playerList = CreatePlayerList(nameList);
+                if (playerList.players.Count == 0) return false;
 
                 // Create fixtures
                 Fixtures fixtureList = CreateFixtureList(playerList.players.Count);
-
-                Console.WriteLine(playerList);
+                if (fixtureList.fixtures.Count == 0) return false;
             }
             catch (Exception ex)
             {
@@ -41,81 +41,98 @@ namespace AccessPong.Events.Helper
 
         public Fixtures CreateFixtureList(int playerCount)
         {
-            // Perform actual logic here :)
-            var circularArray = new List<int>();
-
-            for (int i = 0; i < playerCount; i++)
+            try
             {
-                circularArray.Add(i+1);
-            }
+                var circularArray = new List<int>();
 
-            // If odd amount of players add a dud player for sorting
-            if (playerCount % 2 != 0)
-            {
-                circularArray.Add(-1);
-            }
-
-            var fixtures = new Fixtures();
-            fixtures.fixtures = new List<Fixture>();
-
-            int gameCount = 0;  // Redundant, just for testing
-            int backPtr;
-            int frontPtr;
-
-            for (int i = 0; i < circularArray.Count - 1; i++)
-            {
-                for (int j = 0; j < circularArray.Count / 2; j++)
+                for (int i = 0; i < playerCount; i++)
                 {
-                    backPtr = 0 + j;
-                    frontPtr = circularArray.Count - j - 1;
+                    circularArray.Add(i + 1);
+                }
 
-                    if (circularArray[backPtr] != -1 && circularArray[frontPtr] != -1)
+                // If odd amount of players add a dud player for sorting
+                if (playerCount % 2 != 0)
+                {
+                    circularArray.Add(-1);
+                }
+
+                var fixtures = new Fixtures();
+                fixtures.fixtures = new List<Fixture>();
+
+                int gameCount = 0; // Redundant, just for testing
+                int backPtr;
+                int frontPtr;
+
+                for (int i = 0; i < circularArray.Count - 1; i++)
+                {
+                    for (int j = 0; j < circularArray.Count / 2; j++)
                     {
-                        gameCount++;
+                        backPtr = 0 + j;
+                        frontPtr = circularArray.Count - j - 1;
 
-                        var newFixture = new Fixture()
+                        if (circularArray[backPtr] != -1 && circularArray[frontPtr] != -1)
                         {
-                            FixtureId = gameCount,
-                            PlayerOneId = circularArray[backPtr],
-                            PlayerTwoId = circularArray[frontPtr],
-                        };
+                            gameCount++;
 
-                        fixtures.fixtures.Add(newFixture);
+                            var newFixture = new Fixture()
+                            {
+                                FixtureId = gameCount,
+                                PlayerOneId = circularArray[backPtr],
+                                PlayerTwoId = circularArray[frontPtr],
+                            };
+
+                            fixtures.fixtures.Add(newFixture);
+                        }
                     }
+
+                    // Loop items through circular queue
+                    var copyList = new List<int>();
+                    copyList.Add(circularArray[0]);
+                    copyList.Add(circularArray[circularArray.Count - 1]);
+                    for (int k = 2; k < circularArray.Count; k++)
+                    {
+                        copyList.Add(circularArray[k - 1]);
+                    }
+
+                    circularArray = copyList;
                 }
 
-                // Loop items through circular queue
-                var copyList = new List<int>();
-                copyList.Add(circularArray[0]);
-                copyList.Add(circularArray[circularArray.Count - 1]);
-                for (int k = 2; k < circularArray.Count; k++)
-                {
-                    copyList.Add(circularArray[k - 1]);
-                }
-
-                circularArray = copyList;
+                return fixtures;
             }
-
-            return fixtures;
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new Fixtures();
+            }
         }
 
         public Players CreatePlayerList(List<string> nameList)
         {
-            Players playerList = new Players();
-            playerList.players = new List<Player>();
-
-            for (var i = 0; i < nameList.Count; i++)
+            try
             {
-                var player = new Player()
+
+
+                Players playerList = new Players();
+                playerList.players = new List<Player>();
+
+                for (var i = 0; i < nameList.Count; i++)
                 {
-                    PlayerId = i + 1,
-                    PlayerName = nameList[i],
-                };
+                    var player = new Player()
+                    {
+                        PlayerId = i + 1,
+                        PlayerName = nameList[i],
+                    };
 
-                playerList.players.Add(player);
+                    playerList.players.Add(player);
+                }
+
+                return playerList;
             }
-
-            return playerList;
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new Players();
+            }
         }
     }
 }
