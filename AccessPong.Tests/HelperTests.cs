@@ -4,6 +4,8 @@ using System.Text;
 using AccessPong.Events.Helper;
 using AccessPong.Events.Models;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Moq;
 using NUnit.Framework;
 
 namespace AccessPong.Tests
@@ -14,9 +16,15 @@ namespace AccessPong.Tests
         private Helper _helper;
         private Fixtures threeFixtures;
 
+        private Mock<ILogger<Helper>> _logger;
+
+        private readonly string databaseFilename = "TEST-AccessPongDB";
+
         [SetUp]
         public void Init()
         {
+            _logger = new Mock<ILogger<Helper>>();
+
             threeFixtures = new Fixtures()
             {
                 fixtures = new List<Fixture>()
@@ -42,7 +50,7 @@ namespace AccessPong.Tests
                 }
             };
 
-            _helper = new Helper();
+            _helper = new Helper(_logger.Object);
         }
 
         [Test]
@@ -50,7 +58,6 @@ namespace AccessPong.Tests
         {
             // Arrange
             bool expected = true;
-            string databaseFilename = "TEST-AccessPongDB";
 
             // Act
             bool actual = _helper.PersistFixtures(threeFixtures, databaseFilename);

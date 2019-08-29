@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AccessPong.Events.Helper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace AccessPong
@@ -26,10 +28,14 @@ namespace AccessPong
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddOptions();
+            services.AddLogging(this.SetupLogging);
+
+            services.AddTransient<IHelper, Helper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -43,6 +49,20 @@ namespace AccessPong
 
             app.UseHttpsRedirection();
             app.UseMvc();
+
+            this.SetupLoggingFile(loggerFactory, env);
+        }
+
+        private void SetupLogging(ILoggingBuilder loggingBuilder)
+        {
+            loggingBuilder.AddConfiguration(this.Configuration.GetSection("Logging"));
+            loggingBuilder.AddConsole();
+            loggingBuilder.AddDebug();
+        }
+
+        private void SetupLoggingFile(ILoggerFactory loggerFactory, IHostingEnvironment env)
+        {
+            loggerFactory.AddFile(env.ContentRootPath + Configuration.GetSection("AppConfiguration")["LogLocation"]);
         }
     }
 }
