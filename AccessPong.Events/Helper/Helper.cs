@@ -4,15 +4,21 @@ using System.IO;
 using System.Text;
 using AccessPong.Events.Models;
 using LiteDB;
+using Microsoft.Extensions.Logging;
 
 namespace AccessPong.Events.Helper
 {
     public class Helper : IHelper
     {
-        private List<string> nameList;
+        private readonly ILogger<Helper> _logger;
 
-        // Move to config file
-        private readonly string databaseFilename = "TEST-AccessPongDB";
+        private List<string> nameList;
+        private readonly string databaseFilename = "TEST-AccessPongDB"; // Move to config file
+
+        public Helper(ILogger<Helper> logger)
+        {
+            this._logger = logger;
+        }
 
         public bool GenerateFixtures()
         {
@@ -23,6 +29,8 @@ namespace AccessPong.Events.Helper
              Will probably need to inject stuff for test mocking
              Return true on success, false on fail
              */
+
+            _logger.LogInformation($"{DateTime.UtcNow}: Trying to generate fixtures.");
 
             try
             {
@@ -42,7 +50,7 @@ namespace AccessPong.Events.Helper
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);  // Log error
+                _logger.LogError($"{DateTime.UtcNow}: {ex.Message}");
                 return false;
             }
 
