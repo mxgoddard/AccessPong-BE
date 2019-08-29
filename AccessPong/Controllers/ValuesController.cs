@@ -45,6 +45,13 @@ namespace AccessPong.Controllers
         [HttpGet("fixtures/generate")]
         public IActionResult GenerateFixturesEndpoint()
         {
+            bool IS_ADMIN = true;
+
+            if (!IS_ADMIN)
+            {
+                return Unauthorized($"{DateTime.UtcNow}: Fixtures failed to generate.");
+            }
+
             Helper _helper = new Helper();
             bool success = _helper.GenerateFixtures();
 

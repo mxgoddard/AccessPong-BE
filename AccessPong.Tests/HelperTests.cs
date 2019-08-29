@@ -12,31 +12,12 @@ namespace AccessPong.Tests
     public class HelperTests
     {
         private Helper _helper;
+        private Fixtures threeFixtures;
 
         [SetUp]
         public void Init()
         {
-            _helper = new Helper();
-        }
-
-        [Test]
-        public void GenerateFixtures_WholeMethod()
-        {
-            // Arrange
-            bool expected = true;
-
-            // Act
-            bool actual = _helper.GenerateFixtures();
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void CreateFixtures_ThreePlayers()
-        {
-            // Arrange
-            Fixtures expected = new Fixtures()
+            threeFixtures = new Fixtures()
             {
                 fixtures = new List<Fixture>()
                 {
@@ -60,6 +41,42 @@ namespace AccessPong.Tests
                     }
                 }
             };
+
+            _helper = new Helper();
+        }
+
+        [Test]
+        public void PersistFixtures()
+        {
+            // Arrange
+            bool expected = true;
+            string databaseFilename = "TEST-AccessPongDB";
+
+            // Act
+            bool actual = _helper.PersistFixtures(threeFixtures, databaseFilename);
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void GenerateFixtures_WholeMethod()
+        {
+            // Arrange
+            bool expected = true;
+
+            // Act
+            bool actual = _helper.GenerateFixtures();
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void CreateFixtures_ThreePlayers()
+        {
+            // Arrange
+            Fixtures expected = threeFixtures;
 
             // Act
             Fixtures actual = _helper.CreateFixtureList(3);
