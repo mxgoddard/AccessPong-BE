@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AccessPong.Events.Helper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace AccessPong.Controllers
 {
@@ -13,6 +14,15 @@ namespace AccessPong.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        private readonly ILogger<ValuesController> _logger;
+        private readonly IHelper _helper;
+
+        public ValuesController(ILogger<ValuesController> logger, IHelper helper)
+        {
+            _logger = logger;
+            _helper = helper;
+        }
+
         // GET api/home
         [HttpGet]
         public IActionResult GetApi()
@@ -45,7 +55,14 @@ namespace AccessPong.Controllers
         [HttpGet("fixtures/generate")]
         public IActionResult GenerateFixturesEndpoint()
         {
-            Helper _helper = new Helper();
+
+            bool IS_ADMIN = true;
+
+            if (!IS_ADMIN)
+            {
+                return Unauthorized($"{DateTime.UtcNow}: Fixtures failed to generate.");
+            }
+
             bool success = _helper.GenerateFixtures();
 
             if (!success)

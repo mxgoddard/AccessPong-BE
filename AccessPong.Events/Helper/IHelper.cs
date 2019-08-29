@@ -12,5 +12,7 @@ namespace AccessPong.Events.Helper
         Players CreatePlayerList(List<string> nameList);
 
         Fixtures CreateFixtureList(int playerCount);
+
+        bool PersistFixtures(Fixtures fixtures, string databaseFilename);
     }
 }
