@@ -14,5 +14,9 @@ namespace AccessPong.Events.Helper
         Fixtures CreateFixtureList(int playerCount);
 
         bool PersistFixtures(Fixtures fixtures, string databaseFilename);
+
+        string GetFixtures(string databaseFilename);
+
+        string GetDatabasePathFromSettings();
     }
 }

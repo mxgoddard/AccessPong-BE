@@ -4,6 +4,7 @@ using System.Text;
 using AccessPong.Events.Helper;
 using AccessPong.Events.Models;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -17,13 +18,13 @@ namespace AccessPong.Tests
         private Fixtures threeFixtures;
 
         private Mock<ILogger<Helper>> _logger;
-
-        private readonly string databaseFilename = "TEST-AccessPongDB";
+        private Mock<IConfiguration> _configuration;
 
         [SetUp]
         public void Init()
         {
             _logger = new Mock<ILogger<Helper>>();
+            _configuration = new Mock<IConfiguration>();
 
             threeFixtures = new Fixtures()
             {
@@ -50,27 +51,33 @@ namespace AccessPong.Tests
                 }
             };
 
-            _helper = new Helper(_logger.Object);
+            _helper = new Helper(_logger.Object, _configuration.Object);
         }
 
-        [Test]
-        public void PersistFixtures()
-        {
-            // Arrange
-            bool expected = true;
+        // Will make actual adjustments to the database, keep commented out till better way to test
+        //[Test]
+        //public void PersistFixtures()
+        //{
+        //    // Arrange
+        //    bool expected = true;
 
-            // Act
-            bool actual = _helper.PersistFixtures(threeFixtures, databaseFilename);
+        //    // Act
+        //    bool actual = _helper.PersistFixtures(threeFixtures, databaseFilename);
 
-            // Assert
-            Assert.AreEqual(expected, actual);
-        }
+        //    // Assert
+        //    Assert.AreEqual(expected, actual);
+        //}
 
         [Test]
         public void GenerateFixtures_WholeMethod()
         {
             // Arrange
             bool expected = true;
+
+            string databaseFileLocation =
+                "C:\\Users\\Max.Goddard\\Desktop\\AccessPong-BE\\AccessPong.Data\\Database\\Test-AccessPongDB.db";
+
+            _configuration.Setup(x => x.GetSection(It.IsAny<string>())["Test-Database"]).Returns(databaseFileLocation);
 
             // Act
             bool actual = _helper.GenerateFixtures();
@@ -168,6 +175,22 @@ namespace AccessPong.Tests
 
             // Assert
             actual.Should().BeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void GetTestDatabase_GreenPath()
+        {
+            // Arrange
+            string expected =
+                "C:\\Users\\Max.Goddard\\Desktop\\AccessPong-BE\\AccessPong.Data\\Database\\Test-AccessPongDB.db";
+
+            _configuration.Setup(x => x.GetSection(It.IsAny<string>())["Test-Database"]).Returns(expected);
+
+            // Act
+            string actual = _helper.GetDatabasePathFromSettings();
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
     }
 }
