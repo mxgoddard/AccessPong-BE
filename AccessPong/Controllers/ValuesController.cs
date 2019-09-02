@@ -48,7 +48,10 @@ namespace AccessPong.Controllers
         [HttpGet("fixtures")]
         public IActionResult GetFixtures()
         {
-            return Ok($"{DateTime.UtcNow}: This is the /api/fixtures endpoint.");
+            // Get Fixtures - return as JSON
+            var fixturesJson = _helper.GetFixtures("TEST-AccessPongDB");
+
+            return Content(fixturesJson, "application/json");
         }
 
         // GET api/fixtures/generate
@@ -56,7 +59,7 @@ namespace AccessPong.Controllers
         public IActionResult GenerateFixturesEndpoint()
         {
 
-            bool IS_ADMIN = true;
+            bool IS_ADMIN = false;
 
             if (!IS_ADMIN)
             {

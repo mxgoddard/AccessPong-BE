@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using AccessPong.Events.Models;
+using Json.Net;
 using LiteDB;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace AccessPong.Events.Helper
@@ -11,13 +13,51 @@ namespace AccessPong.Events.Helper
     public class Helper : IHelper
     {
         private readonly ILogger<Helper> _logger;
+        private readonly IConfiguration _configuration;
 
         private List<string> nameList;
         private readonly string databaseFilename = "TEST-AccessPongDB"; // Move to config file
 
-        public Helper(ILogger<Helper> logger)
+        public Helper(ILogger<Helper> logger, IConfiguration configuration)
         {
             this._logger = logger;
+            this._configuration = configuration;
+        }
+
+        public string GetFixtures(string databaseFilename)
+        {
+            string dbFilePath = GetDatabasePathFromSettings();
+
+            try
+            {
+                // Open database or create if doesn't exist
+                using (var db = new LiteDatabase(dbFilePath))
+                {
+                    // Read fixture table
+                    var col = db.GetCollection<Fixture>("tbl_fixtures");
+
+                    var data = col.Find(x => x.FixtureId > 0);
+
+                    Fixtures fixtures = new Fixtures();
+                    fixtures.fixtures = new List<Fixture>();
+
+                    foreach (var item in data)
+                    {
+                        fixtures.fixtures.Add(item);
+                    }
+
+                    Console.WriteLine(fixtures);
+
+                    var jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(fixtures);
+
+                    return jsonString;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{DateTime.UtcNow}: {ex.Message}");
+                return "";
+            }
         }
 
         public bool GenerateFixtures()
@@ -57,13 +97,12 @@ namespace AccessPong.Events.Helper
             return true;
         }
 
-        // [!] This method will currently drop the whole tbl_fixtures table
+        // [!] This method will currently drop the whole tbl_fixtures table and re-create it
         public bool PersistFixtures(Fixtures fixtures, string databaseFilename)
         {
             try
             {
-                string path = Directory.GetCurrentDirectory();
-                string dbFilePath = Path.GetFullPath(Path.Combine(path, $@"..\..\..\..\AccessPong.Data\Database\{databaseFilename}.db"));
+                string dbFilePath = GetDatabasePathFromSettings();
 
                 // Open database or create if doesn't exist
                 using (var db = new LiteDatabase(dbFilePath))
@@ -181,6 +220,26 @@ namespace AccessPong.Events.Helper
                 Console.WriteLine(ex.Message);
                 return new Players();
             }
+        }
+
+        public string GetDatabasePathFromSettings()
+        {
+            string sourceRoot = null;
+            try
+            {
+                sourceRoot = this._configuration.GetSection("DatabaseFileLocations")["Test-Database"];
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError("A problem occurred getting the database path from configuration", ex);
+            }
+
+            if (string.IsNullOrEmpty(sourceRoot))
+            {
+                this._logger.LogError("No database path found in the configuration.");
+            }
+
+            return sourceRoot;
         }
     }
 }

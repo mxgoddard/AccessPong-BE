@@ -11,24 +11,33 @@ namespace AccessPong.Data.Logic
     {
         public List<string> ConvertNames()
         {
-            List<string> names = new List<string>();
-
-            string path = Directory.GetCurrentDirectory();
-            string filePath = Path.GetFullPath(Path.Combine(path, @"..\..\..\..\AccessPong.Data\Data\names.json"));
-            Console.WriteLine(filePath);
-
-            using (StreamReader r = new StreamReader(filePath))
+            try
             {
-                string json = r.ReadToEnd();
-                var arr = JArray.Parse(json);
+                List<string> names = new List<string>();
 
-                foreach (var name in arr)
+                string path = Directory.GetCurrentDirectory();
+
+                // Extract file path to appsettings
+                string filePath = Path.GetFullPath(Path.Combine(path, @"C:\Users\Max.Goddard\Desktop\AccessPong-BE\AccessPong.Data\Data\names.json"));
+                Console.WriteLine(filePath);
+
+                using (StreamReader r = new StreamReader(filePath))
                 {
-                    names.Add(name.ToString());
-                }
-            }
+                    string json = r.ReadToEnd();
+                    var arr = JArray.Parse(json);
 
-            return names;
+                    foreach (var name in arr)
+                    {
+                        names.Add(name.ToString());
+                    }
+                }
+
+                return names;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
         }
     }
 }
