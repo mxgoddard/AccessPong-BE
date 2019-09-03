@@ -15,6 +15,8 @@ namespace AccessPong.Events.Helper
 
         bool PersistFixtures(Fixtures fixtures, string databaseFilename);
 
+        bool PersistPlayers(Players players, string databaseFilename);
+
         string GetFixtures();
 
         string GetDatabasePathFromSettings();

@@ -16,7 +16,6 @@ namespace AccessPong.Events.Helper
         private readonly IConfiguration _configuration;
 
         private List<string> nameList;
-        private readonly string databaseFilename = "TEST-AccessPongDB"; // Move to config file
 
         public Helper(ILogger<Helper> logger, IConfiguration configuration)
         {
@@ -128,12 +127,15 @@ namespace AccessPong.Events.Helper
                 Players playerList = CreatePlayerList(nameList);
                 if (playerList.players.Count == 0) return false;
 
+                // Persist players in database
+                // if (!PersistFixtures(playerList, GetDatabasePathFromSettings())) return false;
+
                 // Create fixtures
                 Fixtures fixtureList = CreateFixtureList(playerList.players.Count);
                 if (fixtureList.fixtures.Count == 0) return false;
 
                 // Persist fixtures in database
-                if (!PersistFixtures(fixtureList, databaseFilename)) return false;
+                if (!PersistFixtures(fixtureList, GetDatabasePathFromSettings())) return false;
             }
             catch (Exception ex)
             {
@@ -171,7 +173,38 @@ namespace AccessPong.Events.Helper
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"{DateTime.UtcNow}: {ex.Message}");
+                return false;
+            }
+        }
+
+        // [!] This method will currently drop the whole tbl_fixtures table and re-create it
+        public bool PersistPlayers(Players players, string databaseFilename)
+        {
+            try
+            {
+                string dbFilePath = GetDatabasePathFromSettings();
+
+                // Open database or create if doesn't exist
+                using (var db = new LiteDatabase(dbFilePath))
+                {
+                    // Drop table
+                    db.DropCollection("tbl_players");
+
+                    // Create fixtures table
+                    var col = db.GetCollection<Player>("tbl_players");
+
+                    foreach (var player in players.players)
+                    {
+                        col.Insert(player);
+                    }
+
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{DateTime.UtcNow}: {ex.Message}");
                 return false;
             }
         }
@@ -238,7 +271,7 @@ namespace AccessPong.Events.Helper
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"{DateTime.UtcNow}: {ex.Message}");
                 return new Fixtures();
             }
         }
@@ -265,7 +298,7 @@ namespace AccessPong.Events.Helper
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"{DateTime.UtcNow}: {ex.Message}");
                 return new Players();
             }
         }
