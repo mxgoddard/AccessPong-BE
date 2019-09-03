@@ -5,7 +5,7 @@ Back end repository to AccessPong.
 
 ### Home
 
-GET [/api] (WIP)
+GET [/api](/api) (WIP)
 
 Returns a json object with all possible endpoints.
 
