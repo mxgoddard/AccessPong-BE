@@ -11,9 +11,9 @@ Returns a json object with all possible endpoints.
 
 ### Get Fixtures
 
-```
-GET [/api/fixtures]
+GET [/api/fixtures](/api/fixtures)
 
+```
 Output:
 {
     "fixtures": [
@@ -39,9 +39,9 @@ Returns a json object with all the games that have and are yet to be played.
 
 ### Next Fixture
 
-```
-GET [/api/fixtures/next]
+GET [/api/fixtures/next](/api/fixtures/next)
 
+```
 Output:
 {
     "Id": 2,
@@ -56,9 +56,9 @@ Returns a json object with the next game to be played.
 
 ### Update Fixture
 
-```
-POST [/api/fixtures/update]
+POST [/api/fixtures/update](/api/fixtures/update)
 
+```
 Input:
 {
     "FixtureId": 1,
