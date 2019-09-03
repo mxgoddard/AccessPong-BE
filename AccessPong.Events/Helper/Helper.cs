@@ -24,6 +24,34 @@ namespace AccessPong.Events.Helper
             this._configuration = configuration;
         }
 
+        public string UpdateFixture(int fixtureId, int winnerId)
+        {
+            string dbFilePath = GetDatabasePathFromSettings();
+
+            try
+            {
+                // Open database or create if doesn't exist
+                using (var db = new LiteDatabase(dbFilePath))
+                {
+                    var col = db.GetCollection<Fixture>("tbl_fixtures");
+
+                    var matchToUpdate = col.FindOne(Query.EQ("FixtureId", fixtureId));
+                    matchToUpdate.WinnerId = winnerId;
+
+                    col.Update(matchToUpdate);
+
+                    var jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(matchToUpdate);
+
+                    return jsonString;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{DateTime.UtcNow}: Failed to update fixture (fixtureId: {fixtureId}) with winnerId of {winnerId}. {ex.Message}");
+                return "";
+            }
+        }
+
         public string GetNextGame()
         {
             string dbFilePath = GetDatabasePathFromSettings();
