@@ -10,5 +10,6 @@ namespace AccessPong.Events.Models
         public int FixtureId { get; set; }
         public int PlayerOneId { get; set; }
         public int PlayerTwoId { get; set; }
+        public int WinnerId { get; set; }
     }
 }
