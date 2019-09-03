@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AccessPong.Events.Helper;
+using AccessPong.Events.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -83,5 +84,13 @@ namespace AccessPong.Controllers
             return Content(fixtureJson, "application/json");
         }
 
+        // POST api/fixtures/update
+        [HttpPost("fixtures/update")]
+        public IActionResult UpdateFixture([FromBody]FixtureUpdate data)
+        {
+            var fixtureJson = _helper.UpdateFixture(data.FixtureId, data.WinnerId);
+
+            return Content(fixtureJson, "application/json");
+        }
     }
 }

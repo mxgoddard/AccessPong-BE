@@ -20,5 +20,7 @@ namespace AccessPong.Events.Helper
         string GetDatabasePathFromSettings();
 
         string GetNextGame();
+
+        string UpdateFixture(int fixtureId, int winnerId);
     }
 }
