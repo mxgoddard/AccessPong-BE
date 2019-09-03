@@ -5,16 +5,14 @@ Back end repository to AccessPong.
 
 ### Home
 
-```
-GET /api (WIP)
-```
+GET [/api] (WIP)
 
 Returns a json object with all possible endpoints.
 
 ### Get Fixtures
 
 ```
-GET /api/fixtures
+GET [/api/fixtures]
 
 Output:
 {
@@ -42,7 +40,7 @@ Returns a json object with all the games that have and are yet to be played.
 ### Next Fixture
 
 ```
-GET /api/fixtures/next
+GET [/api/fixtures/next]
 
 Output:
 {
@@ -59,7 +57,7 @@ Returns a json object with the next game to be played.
 ### Update Fixture
 
 ```
-POST /api/fixtures/update
+POST [/api/fixtures/update]
 
 Input:
 {
