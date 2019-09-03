@@ -24,7 +24,34 @@ namespace AccessPong.Events.Helper
             this._configuration = configuration;
         }
 
-        public string GetFixtures(string databaseFilename)
+        public string GetNextGame()
+        {
+            string dbFilePath = GetDatabasePathFromSettings();
+
+            try
+            {
+                // Open database or create if doesn't exist
+                using (var db = new LiteDatabase(dbFilePath))
+                {
+                    var col = db.GetCollection<Fixture>("tbl_fixtures");
+
+                    var nextMatch = col.FindOne(Query.And(Query.EQ("WinnerId", -1), Query.All(1)));
+
+                    var jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(nextMatch);
+
+                    return jsonString;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{DateTime.UtcNow}: {ex.Message}");
+                return "";
+            }
+
+            return string.Empty;
+        }
+
+        public string GetFixtures()
         {
             string dbFilePath = GetDatabasePathFromSettings();
 
@@ -62,14 +89,6 @@ namespace AccessPong.Events.Helper
 
         public bool GenerateFixtures()
         {
-            /*
-            This won't be connected to any endpoints, only used for generating fixtures
-
-             Purpose of this method is to create all the fixtures and persist in the database
-             Will probably need to inject stuff for test mocking
-             Return true on success, false on fail
-             */
-
             _logger.LogInformation($"{DateTime.UtcNow}: Trying to generate fixtures.");
 
             try
@@ -115,6 +134,7 @@ namespace AccessPong.Events.Helper
 
                     foreach (var fixture in fixtures.fixtures)
                     {
+                        fixture.WinnerId = -1;
                         col.Insert(fixture);
                     }
 

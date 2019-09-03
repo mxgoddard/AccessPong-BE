@@ -20,6 +20,8 @@ namespace AccessPong.Tests
         private Mock<ILogger<Helper>> _logger;
         private Mock<IConfiguration> _configuration;
 
+        private readonly string dbFilePath = "C:\\Users\\Max.Goddard\\Desktop\\AccessPong-BE\\AccessPong.Data\\Database\\Test-AccessPongDB.db";
+
         [SetUp]
         public void Init()
         {

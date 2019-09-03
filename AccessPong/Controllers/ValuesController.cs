@@ -48,8 +48,7 @@ namespace AccessPong.Controllers
         [HttpGet("fixtures")]
         public IActionResult GetFixtures()
         {
-            // Get Fixtures - return as JSON
-            var fixturesJson = _helper.GetFixtures("TEST-AccessPongDB");
+            var fixturesJson = _helper.GetFixtures();
 
             return Content(fixturesJson, "application/json");
         }
@@ -58,8 +57,7 @@ namespace AccessPong.Controllers
         [HttpGet("fixtures/generate")]
         public IActionResult GenerateFixturesEndpoint()
         {
-
-            bool IS_ADMIN = false;
+            bool IS_ADMIN = true;
 
             if (!IS_ADMIN)
             {
@@ -74,6 +72,15 @@ namespace AccessPong.Controllers
             }
 
             return Ok($"{DateTime.UtcNow}: Fixtures successfully generated.");
+        }
+
+        // GET api/fixtures/next
+        [HttpGet("fixtures/next")]
+        public IActionResult GetNextFixture()
+        {
+            var fixtureJson = _helper.GetNextGame();
+
+            return Content(fixtureJson, "application/json");
         }
 
     }

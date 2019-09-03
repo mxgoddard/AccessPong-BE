@@ -19,7 +19,9 @@ namespace AccessPong.Tests
         public void ReadJson()
         {
             // Arrange
-            List<string> expected = new List<string>() { "Max", "Stefano" };
+
+            // 'expected' must match names.json file
+            List<string> expected = new List<string>() { "Max", "Stefano", "Dave", "John" };
 
             AccessPong.Data.Logic.Names nameClass = new Names();
 
