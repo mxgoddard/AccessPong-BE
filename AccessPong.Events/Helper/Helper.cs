@@ -479,5 +479,57 @@ namespace AccessPong.Events.Helper
                 throw new Exception($"{DateTime.UtcNow}: Failed to update winner, Id: {winnerId} and loser, Id: {loserId}", ex);
             }
         }
+
+        public string GetFixture(int id)
+        {
+            string dbFilePath = GetDatabasePathFromSettings();
+
+            try
+            {
+                // Open database or create if doesn't exist
+                using (var db = new LiteDatabase(dbFilePath))
+                {
+                    var col = db.GetCollection<Fixture>("tbl_fixtures");
+
+                    var allFixtures = col.Find(Query.All());
+                    var fixture = allFixtures.First(x => x.FixtureId == id);
+
+                    var jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(fixture);
+
+                    return jsonString;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{DateTime.UtcNow}: Failed to find fixture by id: {id}", ex);
+                throw new Exception($"{DateTime.UtcNow}: Failed to find fixture by id: {id}", ex);
+            }
+        }
+
+        public string GetPlayer(int id)
+        {
+            string dbFilePath = GetDatabasePathFromSettings();
+
+            try
+            {
+                // Open database or create if doesn't exist
+                using (var db = new LiteDatabase(dbFilePath))
+                {
+                    var col = db.GetCollection<Player>("tbl_players");
+
+                    var allPlayers = col.Find(Query.All());
+                    var player = allPlayers.First(x => x.PlayerId == id);
+
+                    var jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(player);
+
+                    return jsonString;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{DateTime.UtcNow}: Failed to find player by id: {id}", ex);
+                throw new Exception($"{DateTime.UtcNow}: Failed to find player by id: {id}", ex);
+            }
+        }
     }
 }

@@ -29,5 +29,14 @@ namespace AccessPong.Controllers
 
             return Content(playersJson, "application/json");
         }
+
+        // GET api/players
+        [HttpGet("{id}")]
+        public IActionResult GetPlayer(int id)
+        {
+            var playerJson = _helper.GetPlayer(id);
+
+            return Content(playerJson, "application/json");
+        }
     }
 }

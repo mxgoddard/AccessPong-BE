@@ -34,5 +34,9 @@ namespace AccessPong.Events.Helper
         bool FinishMatch(int fixtureId, int winnerId, int loserId);
 
         void UpdatePlayersAfterGame(int winnerId, int loserId);
+
+        string GetFixture(int id);
+
+        string GetPlayer(int id);
     }
 }
