@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using AccessPong.Events.Models;
 using Json.Net;
@@ -16,7 +17,6 @@ namespace AccessPong.Events.Helper
         private readonly IConfiguration _configuration;
 
         private List<string> nameList;
-        private readonly string databaseFilename = "TEST-AccessPongDB"; // Move to config file
 
         public Helper(ILogger<Helper> logger, IConfiguration configuration)
         {
@@ -73,10 +73,8 @@ namespace AccessPong.Events.Helper
             catch (Exception ex)
             {
                 _logger.LogError($"{DateTime.UtcNow}: {ex.Message}");
-                return "";
+                return string.Empty;
             }
-
-            return string.Empty;
         }
 
         public string GetFixtures()
@@ -115,6 +113,42 @@ namespace AccessPong.Events.Helper
             }
         }
 
+        public string GetPlayers()
+        {
+            string dbFilePath = GetDatabasePathFromSettings();
+
+            try
+            {
+                // Open database or create if doesn't exist
+                using (var db = new LiteDatabase(dbFilePath))
+                {
+                    // Read fixture table
+                    var col = db.GetCollection<Player>("tbl_players");
+
+                    var data = col.Find(x => x.PlayerId > 0);
+
+                    Players players = new Players();
+                    players.players = new List<Player>();
+
+                    foreach (var item in data)
+                    {
+                        players.players.Add(item);
+                    }
+
+                    Console.WriteLine(players);
+
+                    var jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(players);
+
+                    return jsonString;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{DateTime.UtcNow}: {ex.Message}");
+                return string.Empty;
+            }
+        }
+
         public bool GenerateFixtures()
         {
             _logger.LogInformation($"{DateTime.UtcNow}: Trying to generate fixtures.");
@@ -128,12 +162,16 @@ namespace AccessPong.Events.Helper
                 Players playerList = CreatePlayerList(nameList);
                 if (playerList.players.Count == 0) return false;
 
+                string dbFilePath = GetDatabasePathFromSettings();
+
+                if (!PersistPlayers(playerList, dbFilePath)) return false;
+
                 // Create fixtures
                 Fixtures fixtureList = CreateFixtureList(playerList.players.Count);
                 if (fixtureList.fixtures.Count == 0) return false;
 
                 // Persist fixtures in database
-                if (!PersistFixtures(fixtureList, databaseFilename)) return false;
+                if (!PersistFixtures(fixtureList, dbFilePath)) return false;
             }
             catch (Exception ex)
             {
@@ -149,10 +187,8 @@ namespace AccessPong.Events.Helper
         {
             try
             {
-                string dbFilePath = GetDatabasePathFromSettings();
-
                 // Open database or create if doesn't exist
-                using (var db = new LiteDatabase(dbFilePath))
+                using (var db = new LiteDatabase(databaseFilename))
                 {
                     // Drop table
                     db.DropCollection("tbl_fixtures");
@@ -163,6 +199,8 @@ namespace AccessPong.Events.Helper
                     foreach (var fixture in fixtures.fixtures)
                     {
                         fixture.WinnerId = -1;
+                        fixture.PlayerOneName = GetPlayerNameFromId(fixture.PlayerOneId, databaseFilename);
+                        fixture.PlayerTwoName = GetPlayerNameFromId(fixture.PlayerTwoId, databaseFilename);
                         col.Insert(fixture);
                     }
 
@@ -171,7 +209,35 @@ namespace AccessPong.Events.Helper
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"{DateTime.UtcNow}: {ex.Message}");
+                return false;
+            }
+        }
+
+        public bool PersistPlayers(Players players, string databaseFilename)
+        {
+            try
+            { 
+                // Open database or create if doesn't exist
+                using (var db = new LiteDatabase(databaseFilename))
+                {
+                    // Drop table
+                    db.DropCollection("tbl_players");
+
+                    // Create fixtures table
+                    var col = db.GetCollection<Player>("tbl_players");
+
+                    foreach (var player in players.players)
+                    {
+                        col.Insert(player);
+                    }
+
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{DateTime.UtcNow}: {ex.Message}");
                 return false;
             }
         }
@@ -238,7 +304,7 @@ namespace AccessPong.Events.Helper
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"{DateTime.UtcNow}: {ex.Message}");
                 return new Fixtures();
             }
         }
@@ -265,7 +331,7 @@ namespace AccessPong.Events.Helper
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"{DateTime.UtcNow}: {ex.Message}");
                 return new Players();
             }
         }
@@ -288,6 +354,32 @@ namespace AccessPong.Events.Helper
             }
 
             return sourceRoot;
+        }
+
+        // This is a really bad and slow way to do things
+        public string GetPlayerNameFromId(int playerId, string dbFilePath)
+        {
+            try
+            {
+                using (var db = new LiteDatabase(dbFilePath))
+                {
+                    // Fix this query
+                    var col = db.GetCollection<Player>("tbl_players");
+
+                    var allPlayers = col.Find(Query.All());
+
+                    //var player = col.Find(x => x.PlayerId == playerId);
+                    var player = allPlayers.First(x => x.PlayerId == playerId);
+
+                    return player.PlayerName;
+                    // return player.PlayerName;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{DateTime.UtcNow}: {ex.Message}");
+                return "";
+            }
         }
     }
 }

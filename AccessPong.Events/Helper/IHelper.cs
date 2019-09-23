@@ -15,12 +15,18 @@ namespace AccessPong.Events.Helper
 
         bool PersistFixtures(Fixtures fixtures, string databaseFilename);
 
+        bool PersistPlayers(Players players, string databaseFilename);
+
         string GetFixtures();
+
+        string GetPlayers();
 
         string GetDatabasePathFromSettings();
 
         string GetNextGame();
 
         string UpdateFixture(int fixtureId, int winnerId);
+
+        string GetPlayerNameFromId(int playerId, string dbFilePath);
     }
 }
