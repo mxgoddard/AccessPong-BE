@@ -42,7 +42,9 @@ namespace AccessPong.Controllers
         [HttpGet("league")]
         public IActionResult GetLeague()
         {
-            return Ok($"{DateTime.UtcNow}: This is the /api/league endpoint.");
+            var leagueJson = _helper.GetLeague();
+
+            return Content(leagueJson, "application/json");
         }
     }
 }

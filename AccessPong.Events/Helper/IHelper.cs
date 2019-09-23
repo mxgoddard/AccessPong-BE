@@ -21,6 +21,8 @@ namespace AccessPong.Events.Helper
 
         string GetPlayers();
 
+        string GetLeague();
+
         string GetDatabasePathFromSettings();
 
         string GetNextGame();
