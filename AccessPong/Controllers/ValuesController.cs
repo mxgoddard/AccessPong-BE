@@ -54,6 +54,24 @@ namespace AccessPong.Controllers
             return Content(fixturesJson, "application/json");
         }
 
+        // GET api/players
+        [HttpGet("players")]
+        public IActionResult GetPlayers()
+        {
+            var playersJson = _helper.GetPlayers();
+
+            return Content(playersJson, "application/json");
+        }
+
+        [HttpGet("fixtures/{id}")]
+        public IActionResult GetTest(int id)
+        {
+            Console.WriteLine(id);
+            var fixturesJson = _helper.GetFixtures();
+
+            return Content(fixturesJson, "application/json");
+        }
+
         // GET api/fixtures/generate
         [HttpGet("fixtures/generate")]
         public IActionResult GenerateFixturesEndpoint()

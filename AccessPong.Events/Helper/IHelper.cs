@@ -19,10 +19,14 @@ namespace AccessPong.Events.Helper
 
         string GetFixtures();
 
+        string GetPlayers();
+
         string GetDatabasePathFromSettings();
 
         string GetNextGame();
 
         string UpdateFixture(int fixtureId, int winnerId);
+
+        string GetPlayerNameFromId(int playerId, string dbFilePath);
     }
 }
