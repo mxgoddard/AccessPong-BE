@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using AccessPong.Events.Models;
 using Json.Net;
 using LiteDB;
@@ -379,6 +380,55 @@ namespace AccessPong.Events.Helper
             {
                 _logger.LogError($"{DateTime.UtcNow}: {ex.Message}");
                 return "";
+            }
+        }
+
+        public string GetLeague()
+        {
+            string dbFilePath = GetDatabasePathFromSettings();
+
+            try
+            {
+                // Open database or create if doesn't exist
+                using (var db = new LiteDatabase(dbFilePath))
+                {
+                    // Read fixture table
+                    var col = db.GetCollection<Player>("tbl_players");
+
+                    var data = col.Find(x => x.PlayerId > 0);
+
+                    Players players = new Players();
+                    players.players = new List<Player>();
+
+                    foreach (var item in data)
+                    {
+                        players.players.Add(item);
+                    }
+
+                    Console.WriteLine(players);
+
+                    League league = new League();
+                    league.league = new List<Player>();
+
+                    league.league = players.players.OrderByDescending(o => o.Points).ToList();
+
+                    // Calculate position off location in list.
+                    var count = 1;
+                    foreach (var player in league.league)
+                    {
+                        player.Position = count;
+                        count++;
+                    }
+
+                    var jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(league);
+
+                    return jsonString;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{DateTime.UtcNow}: {ex.Message}");
+                return string.Empty;
             }
         }
     }
