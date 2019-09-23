@@ -27,8 +27,12 @@ namespace AccessPong.Events.Helper
 
         string GetNextGame();
 
-        string UpdateFixture(int fixtureId, int winnerId);
+        void UpdateFixture(int fixtureId, int winnerId);
 
         string GetPlayerNameFromId(int playerId, string dbFilePath);
+
+        bool FinishMatch(int fixtureId, int winnerId, int loserId);
+
+        void UpdatePlayersAfterGame(int winnerId, int loserId);
     }
 }
