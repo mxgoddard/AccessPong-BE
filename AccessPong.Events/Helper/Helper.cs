@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using AccessPong.Events.Models;
 using Json.Net;
 using LiteDB;
@@ -412,6 +413,12 @@ namespace AccessPong.Events.Helper
                     league.league = players.players.OrderByDescending(o => o.Points).ToList();
 
                     // Calculate position off location in list.
+                    var count = 1;
+                    foreach (var player in league.league)
+                    {
+                        player.Position = count;
+                        count++;
+                    }
 
                     var jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(league);
 
