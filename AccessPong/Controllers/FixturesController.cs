@@ -35,9 +35,9 @@ namespace AccessPong.Controllers
         public IActionResult GetTest(int id)
         {
             Console.WriteLine(id);
-            var fixturesJson = _helper.GetFixtures();
+            var fixtureJson = _helper.GetFixture(id);
 
-            return Content(fixturesJson, "application/json");
+            return Content(fixtureJson, "application/json");
         }
 
         // GET api/fixtures/generate
@@ -74,9 +74,14 @@ namespace AccessPong.Controllers
         [HttpPost("update")]
         public IActionResult UpdateFixture([FromBody]FixtureUpdate data)
         {
-            var fixtureJson = _helper.UpdateFixture(data.FixtureId, data.WinnerId);
+            bool success = _helper.FinishMatch(data.FixtureId, data.WinnerId, data.LoserId);
 
-            return Content(fixtureJson, "application/json");
+            if (success)
+            {
+                return Ok($"{DateTime.UtcNow}: Fixture and player information updated.");
+            }
+
+            return NotFound($"{DateTime.UtcNow}: Fixture and player information failed to update.");
         }
     }
 }

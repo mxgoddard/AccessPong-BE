@@ -25,7 +25,7 @@ namespace AccessPong.Events.Helper
             this._configuration = configuration;
         }
 
-        public string UpdateFixture(int fixtureId, int winnerId)
+        public void UpdateFixture(int fixtureId, int winnerId)
         {
             string dbFilePath = GetDatabasePathFromSettings();
 
@@ -40,16 +40,12 @@ namespace AccessPong.Events.Helper
                     matchToUpdate.WinnerId = winnerId;
 
                     col.Update(matchToUpdate);
-
-                    var jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(matchToUpdate);
-
-                    return jsonString;
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"{DateTime.UtcNow}: Failed to update fixture (fixtureId: {fixtureId}) with winnerId of {winnerId}. {ex.Message}");
-                return "";
+                throw new Exception($"{DateTime.UtcNow}: Failed to update fixture (fixtureId: {fixtureId}) with winnerId of {winnerId}. {ex.Message}", ex);
             }
         }
 
@@ -429,6 +425,110 @@ namespace AccessPong.Events.Helper
             {
                 _logger.LogError($"{DateTime.UtcNow}: {ex.Message}");
                 return string.Empty;
+            }
+        }
+
+        public bool FinishMatch(int fixtureId, int winnerId, int loserId)
+        {
+            try
+            {
+                // Update Fixture
+                this.UpdateFixture(fixtureId, winnerId);
+
+                // Update Player Stats
+                this.UpdatePlayersAfterGame(winnerId, loserId);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{DateTime.UtcNow}: {ex.Message}");
+                return false;
+            }
+        }
+
+        public void UpdatePlayersAfterGame(int winnerId, int loserId)
+        {
+            string dbFilePath = GetDatabasePathFromSettings();
+
+            try
+            {
+                // Open database or create if doesn't exist
+                using (var db = new LiteDatabase(dbFilePath))
+                {
+                    var col = db.GetCollection<Player>("tbl_players");
+
+                    var allPlayers = col.Find(Query.All());
+
+                    var winner = allPlayers.First(x => x.PlayerId == winnerId);
+                    var loser = allPlayers.First(x => x.PlayerId == loserId);
+
+                    winner.Points += 3;
+                    winner.MatchesWon++;
+                    winner.MatchesPlayed++;
+
+                    loser.MatchesPlayed++;
+
+                    col.Update(winner);
+                    col.Update(loser);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{DateTime.UtcNow}: Failed to update winner, Id: {winnerId} and loser, Id: {loserId}", ex);
+                throw new Exception($"{DateTime.UtcNow}: Failed to update winner, Id: {winnerId} and loser, Id: {loserId}", ex);
+            }
+        }
+
+        public string GetFixture(int id)
+        {
+            string dbFilePath = GetDatabasePathFromSettings();
+
+            try
+            {
+                // Open database or create if doesn't exist
+                using (var db = new LiteDatabase(dbFilePath))
+                {
+                    var col = db.GetCollection<Fixture>("tbl_fixtures");
+
+                    var allFixtures = col.Find(Query.All());
+                    var fixture = allFixtures.First(x => x.FixtureId == id);
+
+                    var jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(fixture);
+
+                    return jsonString;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{DateTime.UtcNow}: Failed to find fixture by id: {id}", ex);
+                throw new Exception($"{DateTime.UtcNow}: Failed to find fixture by id: {id}", ex);
+            }
+        }
+
+        public string GetPlayer(int id)
+        {
+            string dbFilePath = GetDatabasePathFromSettings();
+
+            try
+            {
+                // Open database or create if doesn't exist
+                using (var db = new LiteDatabase(dbFilePath))
+                {
+                    var col = db.GetCollection<Player>("tbl_players");
+
+                    var allPlayers = col.Find(Query.All());
+                    var player = allPlayers.First(x => x.PlayerId == id);
+
+                    var jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(player);
+
+                    return jsonString;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{DateTime.UtcNow}: Failed to find player by id: {id}", ex);
+                throw new Exception($"{DateTime.UtcNow}: Failed to find player by id: {id}", ex);
             }
         }
     }
