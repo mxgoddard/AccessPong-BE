@@ -79,12 +79,12 @@ Takes a json object containing the fixture and winner ids and returns the update
 
 Assume everything is prefixed with url/api
 
---* home
---* league
---* fixtures
---* fixtures/:id
---* fixtures/generate
---* fixtures/next
---* fixtures/update
---* players
---* players/:id
+..* home
+..* league
+..* fixtures
+..* fixtures/:id
+..* fixtures/generate
+..* fixtures/next
+..* fixtures/update
+..* players
+..* players/:id
