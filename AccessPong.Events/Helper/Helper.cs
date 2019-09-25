@@ -9,6 +9,7 @@ using Json.Net;
 using LiteDB;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace AccessPong.Events.Helper
 {
@@ -530,6 +531,19 @@ namespace AccessPong.Events.Helper
                 _logger.LogError($"{DateTime.UtcNow}: Failed to find player by id: {id}", ex);
                 throw new Exception($"{DateTime.UtcNow}: Failed to find player by id: {id}", ex);
             }
+        }
+
+        public string GetRules()
+        {
+            List<string> rules = new List<string>()
+            {
+                "Best of 3 matches.",
+                "Play for serve.",
+                "2 serves then swap server.",
+                "3 points a win."
+            };
+
+            return JsonConvert.SerializeObject(rules, Formatting.Indented);
         }
     }
 }

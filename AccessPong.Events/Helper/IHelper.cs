@@ -38,5 +38,7 @@ namespace AccessPong.Events.Helper
         string GetFixture(int id);
 
         string GetPlayer(int id);
+
+        string GetRules();
     }
 }

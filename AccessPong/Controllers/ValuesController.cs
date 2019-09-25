@@ -46,5 +46,14 @@ namespace AccessPong.Controllers
 
             return Content(leagueJson, "application/json");
         }
+
+        // GET api/rules
+        [HttpGet("rules")]
+        public IActionResult GetRules()
+        {
+            var rulesJson = _helper.GetRules();
+
+            return Content(rulesJson, "application/json");
+        }
     }
 }

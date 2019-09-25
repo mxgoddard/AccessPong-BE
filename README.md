@@ -20,3 +20,5 @@ Back end repository to AccessPong.
 **GET** [/api/players](/api/players)
 
 **GET** [/api/players/:id](/api/players/:id)
+
+**GET** [/api/rules](/api/rules)
