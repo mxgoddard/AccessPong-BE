@@ -76,3 +76,15 @@ Output:
 ```
 
 Takes a json object containing the fixture and winner ids and returns the update fixture. Returns a json object with the next game to be played.
+
+Assume everything is prefixed with url/api
+
+--* home
+--* league
+--* fixtures
+--* fixtures/:id
+--* fixtures/generate
+--* fixtures/next
+--* fixtures/update
+--* players
+--* players/:id

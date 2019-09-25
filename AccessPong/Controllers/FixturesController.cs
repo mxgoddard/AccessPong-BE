@@ -44,7 +44,7 @@ namespace AccessPong.Controllers
         [HttpGet("generate")]
         public IActionResult GenerateFixturesEndpoint()
         {
-            bool IS_ADMIN = true;
+            bool IS_ADMIN = false;
 
             if (!IS_ADMIN)
             {
